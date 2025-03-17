@@ -69,8 +69,9 @@ export function AuthForm({ type }: AuthFormProps) {
         description: "Welcome back to HirePro!",
       });
 
-      const mockRole = "candidate";
+      const mockRole: string = "candidate";
       router.push(mockRole === "recruiter" ? "/recruiter/dashboard" : "/candidate/dashboard");
+          
     } catch {
       toast({
         title: "Login failed",
