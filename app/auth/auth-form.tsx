@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
@@ -9,7 +9,6 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
@@ -36,8 +35,13 @@ interface AuthFormProps {
 export function AuthForm({ type }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const defaultRole = searchParams.get("role") as "recruiter" | "candidate" | null;
+  const [defaultRole, setDefaultRole] = useState<"recruiter" | "candidate">("candidate");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const roleParam = searchParams.get("role") as "recruiter" | "candidate" | null;
+    if (roleParam) setDefaultRole(roleParam);
+  }, []); // ✅ Avoid Suspense error
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -53,7 +57,7 @@ export function AuthForm({ type }: AuthFormProps) {
       name: "",
       email: "",
       password: "",
-      role: defaultRole || "candidate",
+      role: defaultRole,
     },
   });
 
@@ -107,51 +111,47 @@ export function AuthForm({ type }: AuthFormProps) {
     }
   }
 
-  if (type === "login") {
-    return (
-      <Form {...loginForm}>
-        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
-          <FormField
-            control={loginForm.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="you@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={loginForm.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login"}
-          </Button>
-          <div className="text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-primary hover:underline">
-              Register
-            </Link>
-          </div>
-        </form>
-      </Form>
-    );
-  }
-
-  return (
+  return type === "login" ? (
+    <Form {...loginForm}>
+      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-6">
+        <FormField
+          control={loginForm.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="you@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={loginForm.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" placeholder="••••••••" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? "Logging in..." : "Login"}
+        </Button>
+        <div className="text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/register" className="font-medium text-primary hover:underline">
+            Register
+          </Link>
+        </div>
+      </form>
+    </Form>
+  ) : (
     <Form {...registerForm}>
       <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-6">
         <FormField
@@ -175,53 +175,6 @@ export function AuthForm({ type }: AuthFormProps) {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="you@example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={registerForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={registerForm.control}
-          name="role"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>I am a</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="recruiter" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Recruiter - I want to hire talent
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="candidate" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Job Seeker - I&apos;m looking for a job
-                    </FormLabel>
-                  </FormItem>
-                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>
