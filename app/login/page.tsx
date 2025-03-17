@@ -1,5 +1,8 @@
-import { AuthForm } from "@/app/auth/auth-form"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+"use client";
+
+import { Suspense } from "react";
+import { AuthForm } from "@/app/auth/auth-form";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   return (
@@ -10,10 +13,11 @@ export default function LoginPage() {
           <CardDescription>Enter your credentials to access your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <AuthForm type="login" />
+          <Suspense fallback={<div>Loading...</div>}>
+            <AuthForm type="login" />
+          </Suspense>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-
