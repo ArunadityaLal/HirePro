@@ -4,47 +4,60 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin, Clock, Building, DollarSign } from "lucide-react"
 
+interface Salary {
+  min?: number;
+  max?: number;
+}
+
+interface JobFormData {
+  title?: string;
+  company?: string;
+  location?: string;
+  type?: string;
+  experience?: string;
+  salary?: Salary;
+  description?: string;
+  requirements?: string;
+  benefits?: string;
+  skills?: string[];
+  remote?: boolean;
+  featured?: boolean;
+  urgent?: boolean;
+}
+
 interface JobPreviewProps {
-  formData: any
+  formData: JobFormData;
 }
 
 export function JobPreview({ formData }: JobPreviewProps) {
   const {
-    title,
-    company,
-    location,
-    type,
-    experience,
-    salary,
-    description,
-    requirements,
-    benefits,
-    skills,
+    title = "Job Title",
+    company = "Company Name",
+    location = "Location",
+    type = "",
+    experience = "",
+    salary = {},
+    description = "No description provided",
+    requirements = "No requirements provided",
+    benefits = "",
+    skills = [],
     remote,
     featured,
     urgent,
-  } = formData
+  } = formData;
 
   const formatSalary = () => {
-    if (!salary.min && !salary.max) return "Not specified"
-    if (salary.min && !salary.max) return `$${Number(salary.min).toLocaleString()}+`
-    if (!salary.min && salary.max) return `Up to $${Number(salary.max).toLocaleString()}`
-    return `$${Number(salary.min).toLocaleString()} - $${Number(salary.max).toLocaleString()}`
-  }
+    if (!salary?.min && !salary?.max) return "Not specified";
+    if (salary?.min && !salary?.max) return `$${Number(salary.min).toLocaleString()}+`;
+    if (!salary?.min && salary?.max) return `Up to $${Number(salary.max).toLocaleString()}`;
+    return `$${Number(salary.min).toLocaleString()} - $${Number(salary.max).toLocaleString()}`;
+  };
 
-  const formatJobType = (type: string) => {
-    return type
+  const formatText = (text: string) =>
+    text
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  }
-
-  const formatExperience = (exp: string) => {
-    return exp
-      .split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  }
+      .join(" ");
 
   return (
     <div className="space-y-6">
@@ -53,20 +66,20 @@ export function JobPreview({ formData }: JobPreviewProps) {
           {featured && <Badge className="bg-primary">Featured</Badge>}
           {urgent && <Badge variant="destructive">Urgent</Badge>}
           {remote && <Badge variant="outline">Remote</Badge>}
-          <Badge variant="secondary">{formatJobType(type)}</Badge>
-          <Badge variant="secondary">{formatExperience(experience)}</Badge>
+          {type && <Badge variant="secondary">{formatText(type)}</Badge>}
+          {experience && <Badge variant="secondary">{formatText(experience)}</Badge>}
         </div>
 
         <div>
-          <h1 className="text-2xl font-bold">{title || "Job Title"}</h1>
+          <h1 className="text-2xl font-bold">{title}</h1>
           <div className="flex flex-wrap gap-4 mt-2 text-muted-foreground">
             <div className="flex items-center gap-1">
               <Building className="h-4 w-4" />
-              <span>{company || "Company Name"}</span>
+              <span>{company}</span>
             </div>
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
-              <span>{location || "Location"}</span>
+              <span>{location}</span>
             </div>
             <div className="flex items-center gap-1">
               <DollarSign className="h-4 w-4" />
@@ -86,11 +99,7 @@ export function JobPreview({ formData }: JobPreviewProps) {
         </CardHeader>
         <CardContent>
           <div className="prose max-w-none dark:prose-invert">
-            {description ? (
-              <p>{description}</p>
-            ) : (
-              <p className="text-muted-foreground italic">No description provided</p>
-            )}
+            <p>{description}</p>
           </div>
         </CardContent>
       </Card>
@@ -101,11 +110,7 @@ export function JobPreview({ formData }: JobPreviewProps) {
         </CardHeader>
         <CardContent>
           <div className="prose max-w-none dark:prose-invert">
-            {requirements ? (
-              <p>{requirements}</p>
-            ) : (
-              <p className="text-muted-foreground italic">No requirements provided</p>
-            )}
+            <p>{requirements}</p>
           </div>
         </CardContent>
       </Card>
@@ -128,9 +133,9 @@ export function JobPreview({ formData }: JobPreviewProps) {
           <CardTitle>Skills</CardTitle>
         </CardHeader>
         <CardContent>
-          {skills && skills.length > 0 ? (
+          {skills.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {skills.map((skill: string) => (
+              {skills.map((skill) => (
                 <Badge key={skill} variant="secondary">
                   {skill}
                 </Badge>
@@ -142,6 +147,5 @@ export function JobPreview({ formData }: JobPreviewProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

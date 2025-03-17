@@ -21,12 +21,12 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg">
                 <Link href="/register?role=recruiter">
-                  I'm a Recruiter <ArrowRight className="ml-2 h-4 w-4" />
+                  I&apos;m a Recruiter <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link href="/register?role=candidate">
-                  I'm a Job Seeker <ArrowRight className="ml-2 h-4 w-4" />
+                  I&apos;m a Job Seeker <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
